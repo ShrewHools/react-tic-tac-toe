@@ -5,7 +5,7 @@ import './index.css';
 // Функциональная компонента
 function Square(props) {
 	return (
-		<button className="square" onClick={props.onClick}>
+		<button className={"square " + (props.winner_line ? 'winner_line_css' : null)} onClick={props.onClick}>
 			{props.value}
 		</button>
 	);
@@ -16,6 +16,7 @@ class Board extends React.Component {
 		return (
 			<Square
 				value={this.props.squares[i]}
+				winner_line={this.props.winner_line.includes(i)}
 				onClick={ () => this.props.onClick(i, cell) }
 			/>
 		);
@@ -74,7 +75,7 @@ class Game extends React.Component {
 		const squares = current.squares.slice();
 		const xIsNext = this.state.xIsNext;
 
-		if (calculateWinner(squares) || squares[i]) {
+		if (calculateWinner(squares).winner || squares[i]) {
 			return;
 		}
 
@@ -105,7 +106,9 @@ class Game extends React.Component {
 	render() {
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
-		const winner = calculateWinner(current.squares);
+		const calc_winner = calculateWinner(current.squares);
+		const winner = calc_winner.winner;
+		const winner_line = calc_winner.winner_line;
 		const moves = history.map( (step, move) => {
 			const desc = move ?
 				'Перейти к ходу(' + step.cell.column + step.cell.row +') #' + move :
@@ -129,7 +132,11 @@ class Game extends React.Component {
 		return (
 			<div className="game">
 				<div className="game-board">
-					<Board squares={current.squares} onClick={ (i, cell) => this.handleClick(i, cell) }/>
+					<Board
+						squares={current.squares}
+						winner_line={winner_line}
+						onClick={ (i, cell) => this.handleClick(i, cell) }
+					/>
 				</div>
 				<div className="game-info">
 					<div className="status">{status}</div>
@@ -165,8 +172,8 @@ function calculateWinner(squares) {
 	for (let i = 0; i < lines.length; i++) {
 		const [a, b, c] = lines[i];
 		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-			return squares[a];
+			return {winner: squares[a], winner_line: lines[i]};
 		}
 	}
-	return null;
+	return {winner: null, winner_line: []};
 }

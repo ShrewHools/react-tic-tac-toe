@@ -32,6 +32,10 @@ ol, ul {
   width: 34px;
 }
 
+.winner_line_css {
+  background: rebeccapurple;
+}
+
 .square-desc {
   background: #fff;
   float: left;
