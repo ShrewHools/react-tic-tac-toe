@@ -62,7 +62,8 @@ class Game extends React.Component {
 				cell: null
 			}],
 			stepNumber: 0,
-			xIsNext: true
+			xIsNext: true,
+			isDesc: false
 		}
 	}
 
@@ -88,6 +89,12 @@ class Game extends React.Component {
 		});
 	}
 
+	handleSort() {
+		this.setState({
+			isDesc: !this.state.isDesc
+		})
+	}
+
 	jumpTo(step) {
 		this.setState({
 			stepNumber: step,
@@ -100,13 +107,14 @@ class Game extends React.Component {
 		const current = history[this.state.stepNumber];
 		const winner = calculateWinner(current.squares);
 		const moves = history.map( (step, move) => {
-			debugger;
 			const desc = move ?
 				'Перейти к ходу(' + step.cell.column + step.cell.row +') #' + move :
 				'К началу игры';
 			return (
 				<li key={move}>
-					<button onClick={ () => this.jumpTo(move) }>{desc}</button>
+					<button onClick={ () => this.jumpTo(move) }>
+						{move == this.state.stepNumber ? <b>{desc}</b> : desc}
+					</button>
 				</li>
 			);
 		});
@@ -125,7 +133,10 @@ class Game extends React.Component {
 				</div>
 				<div className="game-info">
 					<div className="status">{status}</div>
-					<ol>{moves}</ol>
+					<ol>{this.state.isDesc ? moves.reverse() : moves}</ol>
+					<button onClick={ () => this.handleSort() }>
+						Sort by: {this.state.isDesc ? 'Descending' : 'Asending'}
+					</button>
 				</div>
 			</div>
 		);
