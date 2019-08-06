@@ -12,11 +12,11 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-	renderSquare(i) {
+	renderSquare(i, cell) {
 		return (
 			<Square
 				value={this.props.squares[i]}
-				onClick={ () => this.props.onClick(i) }
+				onClick={ () => this.props.onClick(i, cell) }
 			/>
 		);
 	}
@@ -25,19 +25,28 @@ class Board extends React.Component {
 		return (
 			<div>
 				<div className="board-row">
-					{this.renderSquare(0)}
-					{this.renderSquare(1)}
-					{this.renderSquare(2)}
+					<div className="square-desc"></div>
+					<div className="square-desc">A</div>
+					<div className="square-desc">B</div>
+					<div className="square-desc">C</div>
 				</div>
 				<div className="board-row">
-					{this.renderSquare(3)}
-					{this.renderSquare(4)}
-					{this.renderSquare(5)}
+					<div className="square-desc">1</div>
+					{this.renderSquare(0, { column: 'A', row: 1 })}
+					{this.renderSquare(1, { column: 'B', row: 1 })}
+					{this.renderSquare(2, { column: 'C', row: 1 })}
 				</div>
 				<div className="board-row">
-					{this.renderSquare(6)}
-					{this.renderSquare(7)}
-					{this.renderSquare(8)}
+					<div className="square-desc">2</div>
+					{this.renderSquare(3, { column: 'A', row: 2 })}
+					{this.renderSquare(4, { column: 'B', row: 2 })}
+					{this.renderSquare(5, { column: 'C', row: 2 })}
+				</div>
+				<div className="board-row">
+					<div className="square-desc">3</div>
+					{this.renderSquare(6, { column: 'A', row: 3 })}
+					{this.renderSquare(7, { column: 'B', row: 3 })}
+					{this.renderSquare(8, { column: 'C', row: 3 })}
 				</div>
 			</div>
 		);
@@ -49,14 +58,15 @@ class Game extends React.Component {
 		super(props);
 		this.state = {
 			history: [{
-				squares: Array(9).fill(null)
+				squares: Array(9).fill(null),
+				cell: null
 			}],
 			stepNumber: 0,
 			xIsNext: true
 		}
 	}
 
-	handleClick(i) {
+	handleClick(i, cell) {
 		// slice => создает копию массива
 		const history = this.state.history.slice(0, this.state.stepNumber + 1);
 		const current = history[history.length - 1];
@@ -71,6 +81,7 @@ class Game extends React.Component {
 		this.setState({
 			history: history.concat([{
 				squares: squares,
+				cell: cell
 			}]),
 			stepNumber: history.length,
 			xIsNext: !xIsNext
@@ -88,13 +99,13 @@ class Game extends React.Component {
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
 		const winner = calculateWinner(current.squares);
-
 		const moves = history.map( (step, move) => {
+			debugger;
 			const desc = move ?
-				'Перейти к ходу #' + move :
+				'Перейти к ходу(' + step.cell.column + step.cell.row +') #' + move :
 				'К началу игры';
 			return (
-				<li key={step}>
+				<li key={move}>
 					<button onClick={ () => this.jumpTo(move) }>{desc}</button>
 				</li>
 			);
@@ -110,7 +121,7 @@ class Game extends React.Component {
 		return (
 			<div className="game">
 				<div className="game-board">
-					<Board squares={current.squares} onClick={ (i) => this.handleClick(i) }/>
+					<Board squares={current.squares} onClick={ (i, cell) => this.handleClick(i, cell) }/>
 				</div>
 				<div className="game-info">
 					<div className="status">{status}</div>
