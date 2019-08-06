@@ -126,7 +126,12 @@ class Game extends React.Component {
 		if (winner) {
 			status = 'Выиграл ' + winner;
 		} else {
-			status = 'Следующий ход: ' + (this.state.xIsNext ? 'X' : 'O');
+			if (this.state.stepNumber == 9) {
+				status = 'Ничья!!!!';
+			} else {
+				status = 'Следующий ход: ' + (this.state.xIsNext ? 'X' : 'O');
+			}
+
 		}
 
 		return (
