@@ -75,7 +75,7 @@ class Game extends React.Component {
 		const squares = current.squares.slice();
 		const xIsNext = this.state.xIsNext;
 
-		if (calculateWinner(squares).winner || squares[i]) {
+		if (this.calculateWinner(squares).winner || squares[i]) {
 			return;
 		}
 
@@ -103,10 +103,30 @@ class Game extends React.Component {
 		});
 	}
 
+	calculateWinner(squares) {
+		const lines = [
+			[0, 1, 2],
+			[3, 4, 5],
+			[6, 7, 8],
+			[0, 3, 6],
+			[1, 4, 7],
+			[2, 5, 8],
+			[0, 4, 8],
+			[2, 4, 6],
+		];
+		for (let i = 0; i < lines.length; i++) {
+			const [a, b, c] = lines[i];
+			if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+				return {winner: squares[a], winner_line: lines[i]};
+			}
+		}
+		return {winner: null, winner_line: []};
+	}
+
 	render() {
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
-		const calc_winner = calculateWinner(current.squares);
+		const calc_winner = this.calculateWinner(current.squares);
 		const winner = calc_winner.winner;
 		const winner_line = calc_winner.winner_line;
 		const moves = history.map( (step, move) => {
@@ -163,22 +183,3 @@ ReactDOM.render(
 );
 
 
-function calculateWinner(squares) {
-	const lines = [
-		[0, 1, 2],
-		[3, 4, 5],
-		[6, 7, 8],
-		[0, 3, 6],
-		[1, 4, 7],
-		[2, 5, 8],
-		[0, 4, 8],
-		[2, 4, 6],
-	];
-	for (let i = 0; i < lines.length; i++) {
-		const [a, b, c] = lines[i];
-		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-			return {winner: squares[a], winner_line: lines[i]};
-		}
-	}
-	return {winner: null, winner_line: []};
-}
